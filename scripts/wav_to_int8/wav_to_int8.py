@@ -1,3 +1,7 @@
+# WAV 2 int8 converts a directory of wav files to raw and then int8.h for use with the GMO
+# I really only used num2words to keep the aesthetic of the original moffenzeef code
+# So this library is not important.
+
 import os
 import subprocess
 import array
@@ -9,11 +13,10 @@ from num2words import num2words
 
 SAMPLE_RATE = 16384
 MAX_SECONDS = 8
-MAX_FILES = 64  # idk if this is accurate, I think 72 is possible.
+MAX_FILES = 64  # This can be changed, honestly not sure of the limit.
 MEMORY_LIMIT = 131072
 
 OUTPUT_DIR = Path("samples")
-
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -63,7 +66,6 @@ def convert_audio(infile, outfile, target_duration):
         ],
         check=True,
     )
-
 
 # taken and adapted from:
 # https://github.com/sensorium/Mozzi/blob/master/extras/python/char2mozzi.py

@@ -17,7 +17,7 @@ I will also include a README.md for each individual script to help clarify usage
 | Script | Purpose | Related Project |
 |--------|---------|-----------------|
 | wav_to_int8.py | Convert wav files to firmware headers | [project-omg](https://github.com/deformat-records/project-omg) |
-
+| mp4s_to_wav.py | Batch wav audio from mp4 video files | General Use |
 ---
 ### WAV to _int8.h
 
@@ -39,6 +39,24 @@ python wav_to_int8.py <input_directory>
 
 [wav_to_int8.py documentation](scripts/wav_to_int8/README.md)
 
+### MP4 to WAV
+
+Extracts audio from all MP4 files in a directory and converts them to WAV format using ffmpeg.
+
+Features:
+- batch conversion of all `.mp4` files
+- 44.1 kHz output
+- stereo WAV export
+- preserves original filenames
+
+Usage:
+```bash
+python mp4s_to_wavs.py <input_directory>
+```
+
+[mp4s_to_wav.py documentation](scripts/mp4s_to_wav/README.md)
+
+---
 
 ## Notes
 

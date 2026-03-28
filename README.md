@@ -16,9 +16,9 @@ I will also include a README.md for each individual script to help clarify usage
 
 | Script | Purpose | Related Project |
 |--------|---------|-----------------|
-| wav_to_int8.py | Convert wav files to firmware headers | [project-omg](https://github.com/deformat-records/project-omg) |
-| slicethon.py | Slice a wav file into equal parts | General Use |
-| mp4s_to_wav.py | Batch wav audio from mp4 video files | General Use |
+| [wav_to_int8.py](scripts/wav_to_int8/) | Convert wav files to firmware headers | [project-omg](https://github.com/deformat-records/project-omg) |
+| [slicethon.py](scripts/slicethon/) | Slice a wav file into equal parts | General Use |
+| [mp4s_to_wav.py](scripts/mp4s_to_wav/) | Batch wav audio from mp4 video files | General Use |
 ---
 ### WAV to _int8.h
 

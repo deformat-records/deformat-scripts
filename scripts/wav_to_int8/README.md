@@ -12,6 +12,7 @@ requirements:
 ```bash
 pip install num2words
 ```
+also requires ffmpeg installed and available in system PATH
 
 usage:
 ```bash

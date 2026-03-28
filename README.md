@@ -16,8 +16,9 @@ I will also include a README.md for each individual script to help clarify usage
 
 | Script | Purpose | Related Project |
 |--------|---------|-----------------|
-| [wav_to_int8.py](scripts/wav_to_int8/) | Convert wav files to firmware headers | [project-omg](https://github.com/deformat-records/project-omg) |
-| [mp4s_to_wav.py](scripts/mp4s_to_wav/) | Batch wav audio from mp4 video files | General Use |
+| wav_to_int8.py | Convert wav files to firmware headers | [project-omg](https://github.com/deformat-records/project-omg) |
+| slicethon.py | Slice a wav file into equal parts | General Use |
+| mp4s_to_wav.py | Batch wav audio from mp4 video files | General Use |
 ---
 ### WAV to _int8.h
 
@@ -38,6 +39,38 @@ python wav_to_int8.py <input_directory>
 ```
 
 [wav_to_int8.py documentation](scripts/wav_to_int8/README.md)
+
+### Slicethon
+
+Slices WAV files into equal parts using ffmpeg.
+
+Features:
+- splits a file into any number of equal slices
+- creates an output folder automatically
+- preserves original filename with numbered suffixes
+- supports batch processing with `*`
+- hard to pronounce name
+
+Usage:
+```bash
+python slicethon.py <input.wav> <slice_count>
+```
+
+Example:
+```bash
+python slicethon.py amen.wav 16
+```
+
+Output:
+```text
+amen/
+├── amen_0001.wav
+├── amen_0002.wav
+├── amen_0003.wav
+└── ...
+```
+
+[slicethon.py documentation](scripts/slicethon/README.md)
 
 ### MP4 to WAV
 

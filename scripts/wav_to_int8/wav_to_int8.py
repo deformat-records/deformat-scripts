@@ -1,6 +1,13 @@
+# wav_to_int8.py
+#
 # WAV 2 int8 converts a directory of wav files to raw and then int8.h for use with the GMO
 # I really only used num2words to keep the aesthetic of the original moffenzeef code
 # So this library is not important.
+#
+# by John Merrik for Deformat
+# For more useful audio scripts (mostly python):
+# https://github.com/deformat-records/deformat-scripts
+# no attribution required, just leave this crap up here
 
 import os
 import subprocess
@@ -13,10 +20,11 @@ from num2words import num2words
 
 SAMPLE_RATE = 16384
 MAX_SECONDS = 8
-MAX_FILES = 64  # This can be changed, honestly not sure of the limit.
+MAX_FILES = 64  # This can probably be changed, honestly not sure of the limit.
 MEMORY_LIMIT = 131072
 
 OUTPUT_DIR = Path("samples")
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -43,6 +51,7 @@ def get_duration(file):
 
 
 def convert_audio(infile, outfile, target_duration):
+    """DOWNGRADE the audio as needed"""
     subprocess.run(
         [
             "ffmpeg",
@@ -101,7 +110,6 @@ def char2mozzi(infile, outfile, tablename, samplerate):
         fout.write(f"\n\n#endif /* {tablename}_H_ */\n")
 
     print("wrote " + outfile)
-
 
 def main():
     args = parse_args()

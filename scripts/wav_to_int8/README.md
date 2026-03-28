@@ -18,12 +18,13 @@ usage:
 python wav_to_int8.py <input_directory>
 ```
 outputs:
-
+```text
 samples/
 ├── Wav/
 ├── Raw/
 ├── Wavetables/
 └── includes.txt
+```
 
 Input files are automatically renamed using spelled-out numbers:
 - kickone_int8.h

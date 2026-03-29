@@ -15,6 +15,7 @@ import array
 import textwrap
 import random
 import argparse
+import wave
 from pathlib import Path
 from num2words import num2words
 
@@ -23,16 +24,18 @@ MAX_SECONDS = 8
 MAX_FILES = 64  # This can probably be changed, honestly not sure of the limit.
 MEMORY_LIMIT = 131072
 
-OUTPUT_DIR = Path("samples")
+NORMALIZE = True
+HIGHPASS = 20
 
+OUTPUT_DIR = Path("samples")
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "input_dir", help="Input directory containing source audio files"
     )
+    parser.add_argument("--normalize", action="store_true")
     return parser.parse_args()
-
 
 def get_duration(file):
     result = subprocess.check_output(
@@ -49,9 +52,26 @@ def get_duration(file):
     )
     return float(result.decode().strip())
 
+def get_num_samples(wav_file):
+    """added for calculation of the longest sampledata for MAX_NUM_CELLS in Arduino code"""
+    with wave.open(str(wav_file), 'rb') as wf:
+        return wf.getnframes()
 
-def convert_audio(infile, outfile, target_duration):
+def convert_audio(infile, outfile, target_duration, normalize=False):
     """DOWNGRADE the audio as needed"""
+
+    filters = []
+
+    if HIGHPASS:
+        filters.append(f"highpass=f={HIGHPASS}")
+
+    if normalize:
+        filters.append("loudnorm")
+
+    filters.append(f"apad=whole_dur={target_duration}")
+
+    filter_chain = ",".join(filters)
+
     subprocess.run(
         [
             "ffmpeg",
@@ -62,7 +82,7 @@ def convert_audio(infile, outfile, target_duration):
             "-i",
             str(infile),
             "-af",
-            f"highpass=f=20,loudnorm,apad=whole_dur={target_duration}",
+            filter_chain,
             "-ac",
             "1",
             "-ar",
@@ -75,7 +95,7 @@ def convert_audio(infile, outfile, target_duration):
         ],
         check=True,
     )
-
+    
 # taken and adapted from:
 # https://github.com/sensorium/Mozzi/blob/master/extras/python/char2mozzi.py
 def char2mozzi(infile, outfile, tablename, samplerate):
@@ -115,6 +135,7 @@ def main():
     args = parse_args()
 
     input_dir = Path(args.input_dir)
+    normalize = args.normalize
     file_stem = input_dir.name
 
     wav_dir = OUTPUT_DIR / "Wav"
@@ -124,13 +145,26 @@ def main():
     for d in [wav_dir, raw_dir, header_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
-    files = sorted(f for f in input_dir.glob("*") if f.is_file())
+    files = sorted(input_dir.glob("*.wav"))
+
+    if not files:
+        raise Exception("No input files found.")
 
     if len(files) > MAX_FILES:
         raise Exception(f"Maximum {MAX_FILES} files supported.")
 
+    # get durations of all WAVs
     durations = [get_duration(f) for f in files]
     longest = max(durations)
+
+    if longest > MAX_SECONDS:
+        raise Exception(f"Maximum sample length is {MAX_SECONDS} seconds.")
+
+    # final number of cells after padding
+    MAX_NUM_CELLS = int(SAMPLE_RATE * longest)
+
+    if longest > MAX_SECONDS:
+        raise Exception(f"Maximum sample length is {MAX_SECONDS} seconds.")
 
     total_bytes = longest * SAMPLE_RATE * len(files)
 
@@ -139,6 +173,10 @@ def main():
 
     includes = []
 
+    # get max num here, and sort
+    includes.append(f'#define MAX_NUM_CELLS {MAX_NUM_CELLS} // if using multiple banks, replace with longest')
+    includes.append(f'Sample<MAX_NUM_CELLS, AUDIO_RATE> aSample(ANY_SAMPLE_DATA); // replace with any sample data')
+    
     for i, file in enumerate(files, start=1):
         word = num2words(i).replace("-", "").replace(" ", "")
         stem = f"{file_stem}{word}"
@@ -161,7 +199,7 @@ def main():
             check=True,
         )
 
-        convert_audio(file, raw_out, longest)
+        convert_audio(wav_out, raw_out, longest, normalize)
 
         tablename = stem.upper()
 
